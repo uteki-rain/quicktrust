@@ -11,7 +11,7 @@
 - At each turn, each agent can choose to **Collaborate (C) or Defect (D).**
 - To simulate error, there is an independent probability $\epsilon$ at each turn for each agent's action to be inverted.
 
-| My Action              | Their Action           | My Gain | Their Gain |
+| My Action             | Their Action           | My Gain | Their Gain |
 | ---------------------- | ---------------------- | ------- | ---------- |
 | **C**ollaborate | **C**ollaborate | $a$     | $a$        |
 | **C**ollaborate | **D**efect      | $b$     | $c$        |
@@ -90,8 +90,12 @@ We solve this:
 
 ![](images/eqn_wst_linear_solved.svg)
 
-**Estimating Reciprocity $r$.** Since we are estimating reciprocity with delay=1, we group our moves $u_t$ with opponent moves $v_{t+1}$, and count both totals $n_u$ binned by $u$, and coincidence $m_u$ where $u_t=v_{t+1}$ (also binned). We expect $\hat\mu_0=m_0/n_0 \to q+r$ and $\hat\mu_1=m_1/n_1 \to p+r$, and from our assumptions, $p+q+r=1$. Hence we have $\hat r=\hat\mu_0+\hat\mu_1-1$. Since we assume opponent decisions themselves are mutually independent, the variances are given by $\mathrm{Var}[r]=\mathrm{Var}[\mu_0]+\mathrm{Var}[\mu_1]$ where for $u$, $\mathrm{Var}[\mu_u]\gets\hat\mu_u(1-\hat\mu_u)/n_u$.
+**Estimating Reciprocity $r$.** Since we are estimating reciprocity with delay=1, we group our moves $u_t$ with opponent moves $v_{t+1}$, and count both totals $n_u$ binned by $u$, and coincidence $m_u$ where $u_t=v_{t+1}$ (also binned). Given our assumption $p+q+r=1$,
 
-**Addressing Uncertainty With Active Exploration.** We take a confidence interval $\hat r\pm Z\hat\sigma_r$ where $Z>0$ is a constant we set. If $s+\hat r_\min t>0$, we play Nice; if $s+\hat r_\max t<0$, we play Evil. Otherwise, we seem to be left in limbo. Would having a more balanced dataset have reduced our $\hat\sigma_r$? So we compute a $\hat\sigma_{r,\text{ideal}}$ assuming the same $\hat\mu_0,\hat\mu_1$ but with $n_{0,\text{ideal}}=n_{1,\text{ideal}}=(n_0+n_1)/2$. We pick a constant $B>1$; if $\hat\sigma_r/\hat\sigma_{r,\text{ideal}}>B$, then we play whatever move we have played less of, judging by the current $n_0,n_1$; otherwise, we play Copycat out of caution.
+![](images/eqn_reciprocity.svg)
+
+We can do this with variance because we assume opponent decisions themselves are mutually independent. You can read $(\to)$ as "estimates" and $(\gets)$ as "is approximately".
+
+**Addressing Uncertainty With Active Exploration.** We take a confidence interval $r\pm Z\sigma_r$ where $Z>0$ is a constant we set. If $s+r_\min t>0$, we play Nice; if $s+r_\max t<0$, we play Evil. Otherwise, we seem to be left in limbo. Would having a more balanced dataset have reduced our $\sigma_r$? So we compute a $\sigma_{r,\text{ideal}}$ assuming the same $\mu_0,\mu_1$ but with $n_{0,\text{ideal}}=n_{1,\text{ideal}}=(n_0+n_1)/2$. We pick a constant $B>1$; if $\sigma_r/\sigma_{r,\text{ideal}}>B$, then we play whatever move we have played less of, judging by the current $n_0,n_1$; otherwise, we play Copycat out of caution.
 
 **Interpretation.** We respect the sovereign, extort the vulnerable, and avoid the depraved. But all we see is expected relative gain. Is profit. This is what we have become, the statistician is a businessman. Shrewd, but cold.
