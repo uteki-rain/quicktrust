@@ -1,0 +1,17 @@
+# Cargo
+/target
+
+# IDEs
+.vscode/
+*.sublime-*
+Session*.vim
+*.vimrc
+
+# OS
+.DS_Store
+.fseventsd/
+Thumbs.db
+
+# Game Traces: on a whitelist basis
+*.out
+*.txt

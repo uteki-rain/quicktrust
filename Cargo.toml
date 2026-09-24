@@ -1,0 +1,10 @@
+[package]
+name = "quicktrust"
+description = "https://ncase.me/trust but sped up"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+rand = "0.10.3"
+rand_chacha = "0.10.0"
+rayon = "1.12.0"
