@@ -5,6 +5,10 @@
 1. The Game of Trust, sped up, at scale, with the most interesting/competent strategies – and an accompanying evolution simulation capable of being evaluated cheaply for thousands of generations.
 1. Developing and improving a set of custom strategies; currently this comprises primarily of the Businessman alone.
 
+Below is a screenshot of `quicktrust` in action on a Thinkpad X1 Yoga Gen 7 (i7-1270P). It computed a contribution matrix from 12 candidates (144 ordered pairs, keeps diagonal variance uniform) across 10,000 games per pair, 1,000 rounds per game, for a total of 1,440,000,000 rounds played and tallied. Then using this contribution matrix, it simulated 200 generations with a population normalized to 10,000 and multinomial sampling to simulate drift. Across 16 threads, this took 2.5 seconds of wall-clock time.
+
+![](images/demo_260924a.png)
+
 ## The Game
 
 - Two agents play each other **simultaneously,** for **multiple rounds,** with **no communication**, but **with the full history** of the current game.

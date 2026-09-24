@@ -47,27 +47,35 @@ impl<T: ?Sized + Strategy> Strategy for Box<T> {
     }
 }
 
-pub struct Periodic(usize, Box<[bool]>);
+pub struct Periodic {
+    label: String,
+    count: usize,
+    seq: Box<[bool]>,
+}
 impl Periodic {
-    pub fn new(sequence: impl Into<Box<[bool]>>) -> Self { Self(0, sequence.into()) }
-    pub fn mk_generous() -> Self { Self::new([true]) }
-    pub fn mk_greedy() -> Self { Self::new([false]) }
-    pub fn mk_alternate(start: bool, half_period: usize) -> Self {
+    pub fn new(friendly_name: Option<String>, sequence: impl Into<Box<[bool]>>) -> Self {
+        let seq = sequence.into();
+        let label = friendly_name.unwrap_or_else(|| {
+            let bits = seq.iter().map(|p| if *p {'1'} else {'0'}).collect::<String>();
+            format!("Periodic{{{}}}", bits)
+        });
+        Self { label, count: 0, seq }
+    }
+    pub fn mk_nice() -> Self { Self::new(Some("Nice".to_owned()), [true]) }
+    pub fn mk_evil() -> Self { Self::new(Some("Evil".to_owned()), [false]) }
+    pub fn mk_tidal(start: bool, half_period: usize) -> Self {
         let mut buf = vec![start; half_period];
         buf.extend((0..half_period).map(|_| !start));
-        Self::new(buf)
+        Self::new(Some(format!("Tidal({},{})", if start {"high"} else {"low"}, half_period)), buf)
     }
 }
 impl Strategy for Periodic {
-    fn label(&self) -> String {
-        let inner = self.1.iter().map(|&p| if p { '1' } else { '0' }).collect::<String>();
-        format!("Periodic{{{}}}", inner)
-    }
+    fn label(&self) -> String { self.label.clone() }
     fn decide(&mut self, _: &GameSettings, _: Option<(bool, bool)>) -> bool {
-        let i = self.0;
-        let n = self.1.len();
-        self.0 = (i + 1) % n;
-        self.1[i]
+        let i = self.count;
+        let n = self.seq.len();
+        self.count = (i + 1) % n;
+        self.seq[i]
     }
 }
 
@@ -94,7 +102,7 @@ impl ByLast {
     }
     pub fn mk_copycat(mut nice: bool, invert: bool, streak_to_copy: usize, streak_to_nice: usize) -> Self {
         let mut label = String::new();
-        if nice { label.push_str("nice,"); }
+        if !nice { label.push_str("assume_guilty,"); }
         if invert { label.push_str("invert,"); }
         let label = format!("Copycat({}{},{})", label, streak_to_copy, streak_to_nice);
         let mut streak = 0;
@@ -232,7 +240,7 @@ impl Ingroup {
         Self::new(
             label, tolerance, center, periph,
             ByLast::mk_copycat(true, false, 1, 1),
-            Periodic::mk_greedy(),
+            Periodic::mk_evil(),
         )
     }
     pub fn mk_cult_member(
@@ -245,8 +253,8 @@ impl Ingroup {
         let label = format!("CultMember({}){{{},{}}}", tolerance, clabel, plabel);
         Self::new(
             label, tolerance, periph, center,
-            Periodic::mk_greedy(),
-            Periodic::mk_generous(),
+            Periodic::mk_evil(),
+            Periodic::mk_nice(),
         )
     }
     pub fn mk_green_beard(
@@ -257,8 +265,8 @@ impl Ingroup {
         let label = format!("GreenBeard({}){{{}}}", tolerance, bitstr);
         Self::new(
             label, tolerance, key.clone(), key,
-            Periodic::mk_greedy(),
-            Periodic::mk_generous(),
+            Periodic::mk_evil(),
+            Periodic::mk_nice(),
         )
     }
     pub fn mk_fake_beard(
@@ -270,7 +278,7 @@ impl Ingroup {
         Self::new(
             label, tolerance, key.clone(), key,
             ByLast::mk_copycat(true, false, 1, 1),
-            Periodic::mk_greedy(),
+            Periodic::mk_evil(),
         )
     }
 }

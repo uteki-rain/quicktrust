@@ -10,12 +10,12 @@ fn main() {
     // duplicate strategies are unnecessary since they can just be reweighed;
     // variant strategies are discounted.
     let strategies: [(f32, Box<dyn Send + Sync + Fn() -> Box<dyn Strategy>>); _] = [
-        // (1.000, Box::new(|| Box::new(Periodic::mk_generous()))),
-        // (1.000, Box::new(|| Box::new(Periodic::mk_greedy()))),
-        // (1.000, Box::new(|| Box::new(Periodic::mk_alternate(true, 1)))),
-        // (1.000, Box::new(|| Box::new(Periodic::mk_alternate(true, 2)))),
-        // (1.000, Box::new(|| Box::new(Periodic::mk_alternate(true, 5)))),
-        // (1.000, Box::new(|| Box::new(Periodic::mk_alternate(false, 1)))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_nice()))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_evil()))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_tidal(true, 1)))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_tidal(true, 2)))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_tidal(true, 5)))),
+        // (1.000, Box::new(|| Box::new(Periodic::mk_tidal(false, 1)))),
         // (1.000, Box::new(|| Box::new(ByLast::mk_grudger(1)))),
         // (1.000, Box::new(|| Box::new(ByLast::mk_grudger(2)))),
         // (1.000, Box::new(|| Box::new(ByLast::mk_thankful(1)))),
@@ -43,9 +43,9 @@ fn main() {
         // (0.333, Box::new(|| Box::new(Businessman::new(1.8, 1.35, 0.98, [true, true, false, true, true, false, true, true])))),
         // (0.333, Box::new(|| Box::new(Businessman::new(2.1, 1.45, 0.98, [true, true, false, true, true, false, true, true])))),
 
-        (1.000, Box::new(|| Box::new(Periodic::mk_generous()))),
-        (1.000, Box::new(|| Box::new(Periodic::mk_greedy()))),
-        (1.000, Box::new(|| Box::new(Periodic::mk_alternate(false, 1)))),
+        (1.000, Box::new(|| Box::new(Periodic::mk_nice()))),
+        (1.000, Box::new(|| Box::new(Periodic::mk_evil()))),
+        (1.000, Box::new(|| Box::new(Periodic::mk_tidal(false, 1)))),
         (1.000, Box::new(|| Box::new(ByLast::mk_grudger(1)))),
         (1.000, Box::new(|| Box::new(ByLast::mk_copycat(true, false, 1, 1)))),
         (1.000, Box::new(|| Box::new(ByLast::mk_copycat(true, false, 2, 1)))),
@@ -67,10 +67,10 @@ fn main() {
     // game settings (one pair of contestants; they're reset between games)
     let n_games = 10_000;
     // simulation settings
-    let n_generations = 400;
-    let report_every = 10;
-    let virtual_population = 1000; // 0: disable self-play discount
-    let multinomial_sampling = false;
+    let n_generations = 200;
+    let report_every = 50;
+    let virtual_population = 10_000; // 0: disable self-play discount
+    let multinomial_sampling = true;
     assert!(virtual_population > 0 || !multinomial_sampling);
 
     println!(
